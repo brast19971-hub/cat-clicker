@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клик по Котику</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        #cat {
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        #cat:hover {
+            transform: scale(1.1);
+        }
+        #cat:active {
+            transform: scale(0.95);
+        }
+        #counter {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Кликай по котику! 🐱</h1>
+    <svg id="cat" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Простой SVG-котик -->
+        <circle cx="50" cy="50" r="30" fill="#ffdbac" stroke="#333" stroke-width="2"/> <!-- Голова -->
+        <circle cx="35" cy="45" r="3" fill="black"/> <!-- Глаз 1 -->
+        <circle cx="65" cy="45" r="3" fill="black"/> <!-- Глаз 2 -->
+        <circle cx="50" cy="55" r="4" fill="pink"/> <!-- Нос -->
+        <path d="M45 60 Q50 65 55 60" stroke="black" stroke-width="2" fill="none"/> <!-- Рот -->
+        <!-- Ушки -->
+        <path d="M30 30 L25 20 L35 25 Z" fill="#ffdbac" stroke="#333" stroke-width="2"/>
+        <path d="M70 30 L75 20 L65 25 Z" fill="#ffdbac" stroke="#333" stroke-width="2"/>
+        <!-- Хвостик -->
+        <path d="M80 70 Q90 80 85 90" stroke="#ffdbac" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div id="counter">Кликов: 0</div>
+
+    <script>
+        // Инициализация Telegram Web App
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand(); // Расширяем на весь экран
+            document.body.style.background = Telegram.WebApp.themeParams.bg_color || '#667eea';
+        }
+
+        let clicks = 0;
+        const cat = document.getElementById('cat');
+        const counter = document.getElementById('counter');
+
+        cat.addEventListener('click', () => {
+            clicks++;
+            counter.textContent = `Кликов: ${clicks}`;
+            // Анимация: котик "прыгает"
+            cat.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                cat.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Если много кликов, можно добавить конфетти или звук, но пока просто
+            if (clicks % 10 === 0) {
+                alert(`Вау, ${clicks} кликов! Котик счастлив 😻`); // Или используй Telegram.showAlert
+                if (Telegram.WebApp) {
+                    Telegram.WebApp.showAlert(`Котик в шоке от ${clicks} кликов!`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
