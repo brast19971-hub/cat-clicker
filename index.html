@@ -23,6 +23,7 @@
         h1 {
             font-size: 2em;
             margin-bottom: 20px;
+            text-align: center;
         }
         #cat {
             width: 200px;
@@ -57,73 +58,100 @@
             flex-wrap: wrap;
             justify-content: center;
             margin: 10px;
+            gap: 10px;
         }
         .shop-btn {
-            background: #ff9800;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 18px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
-            margin: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         .shop-btn:hover:not(:disabled) {
-            background: #f57c00;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ee5a24, #ff6b6b);
         }
         .shop-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         #breed-btn {
-            background: #9c27b0;
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
             margin: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         #breed-btn:hover:not(:disabled) {
-            background: #7b1fa2;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #7b1fa2, #9c27b0);
         }
         #breed-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         #search {
             padding: 10px;
             margin: 10px;
-            border-radius: 5px;
+            border-radius: 20px;
             border: none;
             width: 200px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-align: center;
+        }
+        #search::placeholder {
+            color: #ccc;
         }
         #bag {
             background: rgba(0,0,0,0.3);
-            border-radius: 10px;
+            border-radius: 20px;
             padding: 15px;
             max-width: 300px;
             margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         #bag h3 {
             margin-top: 0;
+            text-align: center;
         }
         .cat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 5px 0;
-            padding: 5px;
+            padding: 10px;
             background: rgba(255,255,255,0.1);
-            border-radius: 5px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .cat-item:hover {
             background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         .cat-img-small {
             width: 30px;
@@ -138,22 +166,29 @@
         .rarity {
             font-size: 0.8em;
             color: #ffd700;
+            font-weight: bold;
         }
         .sell-btn {
-            background: #ff6b6b;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 15px;
             cursor: pointer;
             font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .sell-btn:hover {
-            background: #ff5252;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ee5a24, #ff6b6b);
         }
         .empty-bag {
             font-style: italic;
             color: #ccc;
+            text-align: center;
         }
         /* Модал */
         #modal {
@@ -171,11 +206,12 @@
             background: linear-gradient(to bottom, #333, #555);
             margin: 10% auto;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 20px;
             width: 80%;
             max-width: 400px;
             text-align: center;
             color: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
         #modal-cat-img {
             width: 150px;
@@ -183,6 +219,7 @@
             border-radius: 50%;
             margin: 0 auto 20px;
             animation: wiggle 2s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         #modal-attrs {
             list-style: none;
@@ -192,29 +229,48 @@
         #modal-attrs li {
             margin: 5px 0;
             font-size: 0.9em;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
         }
         #modal-price {
             font-size: 1.2em;
             color: #ffd700;
+            font-weight: bold;
+            margin: 10px 0;
         }
         #close-modal, #sell-from-modal, #share-modal {
             margin: 10px;
-            padding: 10px;
+            padding: 12px 18px;
             border: none;
-            border-radius: 5px;
+            border-radius: 20px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
         #close-modal {
-            background: #ccc;
-            color: black;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        #close-modal:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
         #sell-from-modal {
-            background: #ff6b6b;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
         }
+        #sell-from-modal:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
         #share-modal {
-            background: #4caf50;
+            background: linear-gradient(45deg, #4caf50, #45a049);
             color: white;
+        }
+        #share-modal:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -227,16 +283,16 @@
         <div id="coins">Кото-монеты: 0</div>
         <div id="potions">Зелья: 0</div>
         <div id="shop">
-            <button class="shop-btn" id="buy-auto">Авто-клик (200 монет) 🤖</button>
-            <button class="shop-btn" id="buy-evo">Эволюция (300 монет) 🌟</button>
-            <button class="shop-btn" id="buy-potion">Зелье (50 монет) 🧪</button>
+            <button class="shop-btn" id="buy-auto">🤖 Авто-клик (200 монет)</button>
+            <button class="shop-btn" id="buy-evo">🌟 Эволюция (300 монет)</button>
+            <button class="shop-btn" id="buy-potion">🧪 Зелье (50 монет)</button>
         </div>
         <br>
-        <button id="breed-btn" disabled>Скрещивать котиков! ✨</button>
+        <button id="breed-btn">✨ Скрещивать котиков!</button>
     </div>
     <div id="bag">
         <h3>Твоя сумка 👜</h3>
-        <input type="text" id="search" placeholder="Поиск по имени/типу..." oninput="filterBag()">
+        <input type="text" id="search" placeholder="Поиск по имени/типу...">
         <div id="bag-content">Сумка пуста, кликай дальше!</div>
     </div>
 
@@ -261,21 +317,35 @@
             document.body.style.background = Telegram.WebApp.themeParams.bg_color || '#667eea';
         }
 
-        // Данные (упростил атрибуты, фокус на типах и редкости)
+        // Расширенные данные: больше пород и имён
         const catTypes = [
             { type: 'Пушистик', desc: 'Fluffy dream' },
             { type: 'Скоттиш', desc: 'Foldy cutie' },
             { type: 'Сфинкс', desc: 'Bald boss' },
             { type: 'Бенгальский', desc: 'Wild spark' },
             { type: 'Абиссинский', desc: 'Tickly tick' },
-            { type: 'Сиамский', desc: 'Chatty charm' }
+            { type: 'Сиамский', desc: 'Chatty charm' },
+            { type: 'Персидский', desc: 'Fluffy royal' },
+            { type: 'Мейн Кун', desc: 'Gentle giant' },
+            { type: 'Рэгдолл', desc: 'Raggy doll' },
+            { type: 'Бирманский', desc: 'Sacred seal' },
+            { type: 'Ориентальный', desc: 'Slim sleek' },
+            { type: 'Американский Шортхэр', desc: 'Everyday hero' },
+            { type: 'Русская Голубая', desc: 'Blue velvet' },
+            { type: 'Бомбейский', desc: 'Panther mini' },
+            { type: 'Экзотик Шортхэр', desc: 'Persian shorty' },
+            { type: 'Британский Шортхэр', desc: 'Teddy bear' },
+            { type: 'Бирманский', desc: 'Mystic points' },
+            { type: 'Шотландский Фолд', desc: 'Folded ears' },
+            { type: 'Бирманский', desc: 'Sacred seal' },
+            { type: 'Турецкий Ван', desc: 'Swimming van' }
         ];
         const rarities = [
-            { name: 'common', multiplier: 1, color: '#ccc' },
-            { name: 'rare', multiplier: 1.2, color: '#00ff00' },
-            { name: 'epic', multiplier: 1.5, color: '#ffd700' }
+            { name: 'common', multiplier: 1, color: '#ccc', basePrice: [5, 15] },
+            { name: 'rare', multiplier: 1.2, color: '#00ff00', basePrice: [20, 40] },
+            { name: 'epic', multiplier: 1.5, color: '#ffd700', basePrice: [50, 100] }
         ];
-        const names = ['Мурзик', 'Пушистик', 'Шрёдингер', 'Буся', 'Кекс', 'Звёздочка', 'Тиша', 'Няша', 'Фифи', 'Лапка', 'Готик', 'Шэдоу', 'Рейвен', 'Поззи', 'Вискерс', 'Павзилла', 'Муншайн', 'Эклипс', 'Фрост', 'Блэйз', 'Силвер', 'Вайлд', 'Свитч', 'Дрим', 'Ноктюрн'];
+        const names = ['Мурзик', 'Пушистик', 'Шрёдингер', 'Буся', 'Кекс', 'Звёздочка', 'Тиша', 'Няша', 'Фифи', 'Лапка', 'Готик', 'Шэдоу', 'Рейвен', 'Поззи', 'Вискерс', 'Павзилла', 'Муншайн', 'Эклипс', 'Фрост', 'Блэйз', 'Силвер', 'Вайлд', 'Свитч', 'Дрим', 'Ноктюрн', 'Албус', 'Фреки', 'Флора', 'Кобальт', 'Гермес', 'Джейден', 'Дэш', 'Корица', 'Джаффа', 'Рыцарь', 'Зигги', 'Гудини', 'Бентли', 'Желе', 'Дуст Банни', 'Фазз', 'Тоу Джэм', 'Макнаггет', 'Леттус', 'Пикл', 'Твид', 'Астериск', 'Амперсанд', 'Дот', 'Пудл', 'Стоун', 'Твинки', 'Сникер', 'Винди', 'Плам', 'Скатлбатт', 'Джигглипафф', 'Зузу', 'Мармит', 'Мейджор Том', 'Мертл', 'Ребел', 'Какао', 'Алекс', 'Бейли', 'Бисквит', 'Блоссом', 'Белла', 'Луна', 'Оливер', 'Лео', 'Сникерс', 'Маршмеллоу', 'Зефир', 'Калипсо', 'Чэрмен', 'Эбби', 'Артемида', 'Афина', 'Бен', 'Бастер', 'Харли', 'Генри', 'Хоббс', 'Джексон', 'Джерри', 'Муфаса', 'Маффет', 'Мuffin', 'Панда', 'Пич', 'Пип', 'Тинкер', 'Мидж', 'Пинат', 'Баттон', 'Бинз', 'Аттикус', 'Бриенна', 'Баттеркап', 'Серсея', 'Чешир Кэт', 'Дейнерыс', 'Дарси', 'Багера', 'Руфус', 'Каспиан'];
 
         // Загрузка
         let clicks = parseInt(localStorage.getItem('catClicks')) || 0;
@@ -328,19 +398,26 @@
         // Авто-клик
         setInterval(() => {
             if (autoClick > 0) {
-                for (let i = 0; i < autoClick; i++) clicks++;
+                for (let i = 0; i < autoClick; i++) {
+                    clicks++;
+                    if (clicks % 50 === 0) {
+                        const newCat = generateCat();
+                        inventory.push(newCat);
+                        if (Telegram.WebApp) Telegram.WebApp.showAlert(`${newCat.name} упал в сумку! Редкость: ${newCat.rarity.toUpperCase()} 😻`);
+                    }
+                }
                 updateUI();
                 checkLevel();
             }
         }, 1000);
 
-        // Рандомная картинка котика
+        // Рандомная картинка
         function getCatImage(catData) {
             const hash = catData.name + catData.type + Math.random().toString(36).substring(7);
             return `https://cataas.com/cat?${hash}`;
         }
 
-        // Обновление UI
+        // Обновление UI (фикс для ТГ: force render)
         function updateUI() {
             counter.textContent = `Кликов: ${clicks}`;
             coinsEl.textContent = `Кото-монеты: ${coins}`;
@@ -350,6 +427,7 @@
             buyAuto.disabled = coins < 200;
             buyEvo.disabled = coins < 300 || evolved;
             breedBtn.disabled = inventory.length < 2 || potions < 1;
+            breedBtn.textContent = `✨ Скрещивать котиков! (${potions} зелий)`;
 
             filteredInventory = inventory.filter(cat => 
                 cat.name.toLowerCase().includes(searchInput.value.toLowerCase()) || 
@@ -368,130 +446,4 @@
                                 <div>${cat.name} (${cat.type})</div>
                                 <div class="rarity">${cat.rarity.toUpperCase()} — ${cat.price} монет</div>
                             </div>
-                            <button class="sell-btn" onclick="event.stopPropagation(); sellCat(${realIdx})">Продать</button>
-                        </div>
-                    `;
-                }).join('');
-            }
-            localStorage.setItem('catClicks', clicks);
-            localStorage.setItem('catCoins', coins);
-            localStorage.setItem('catPotions', potions);
-            localStorage.setItem('catLevel', level);
-            localStorage.setItem('autoClick', autoClick);
-            localStorage.setItem('evolved', evolved);
-            localStorage.setItem('catInventory', JSON.stringify(inventory));
-
-            // Текущий котик
-            const currentCat = generateCat();
-            cat.src = getCatImage(currentCat);
-            cat.alt = currentCat.name;
-        }
-
-        function filterBag() {
-            updateUI();
-        }
-
-        // Генерация котика (упростил)
-        function generateCat(parent1 = null, parent2 = null) {
-            let type, rarity, price;
-            if (parent1 && parent2) {
-                type = Math.random() > 0.5 ? parent1.type : parent2.type;
-                const rareChance = (parent1.rarity === 'rare' || parent2.rarity === 'rare') ? 0.4 : 0.05;
-                rarity = Math.random() < rareChance ? (Math.random() < 0.2 ? 'epic' : 'rare') : 'common';
-                price = Math.floor(((parent1.price + parent2.price) / 2) * rarities.find(r => r.name === rarity).multiplier + Math.random() * 10);
-            } else {
-                const baseIdx = Math.floor(Math.random() * catTypes.length);
-                type = catTypes[baseIdx].type;
-                const rand = Math.random();
-                rarity = rand < 0.05 ? 'epic' : (rand < 0.3 ? 'rare' : 'common');
-                price = Math.floor((Math.random() * 40 + 10) * rarities.find(r => r.name === rarity).multiplier);
-            }
-            const name = names[Math.floor(Math.random() * names.length)];
-            return { name, type, rarity, price };
-        }
-
-        // Модал
-        window.openModal = function(index) {
-            currentModalIndex = index;
-            const cat = inventory[index];
-            modalCatImg.src = getCatImage(cat);
-            modalCatImg.alt = cat.name;
-            modalName.textContent = `${cat.name} (${cat.type})`;
-            modalAttrs.innerHTML = `
-                <li>Тип: ${cat.type}</li>
-                <li>Редкость: ${cat.rarity.toUpperCase()}</li>
-            `;
-            modalPrice.textContent = `Цена: ${cat.price} монет`;
-            shareModal.onclick = () => {
-                if (Telegram.WebApp) Telegram.WebApp.shareUrl(Telegram.WebApp.initDataUnsafe.start_app_url, `${cat.name} — мой редкий котик! ${cat.rarity.toUpperCase()}`);
-            };
-            sellFromModal.onclick = () => sellCat(index);
-            modal.style.display = 'block';
-        };
-
-        closeModal.onclick = () => { modal.style.display = 'none'; };
-        window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-
-        // Продать
-        window.sellCat = function(index) {
-            const cat = inventory.splice(index, 1)[0];
-            coins += cat.price;
-            updateUI();
-            if (modal.style.display === 'block') modal.style.display = 'none';
-            alertOrShow(`Продал ${cat.name} за ${cat.price} монет! 💰`);
-        };
-
-        // Магазин (убрал x2)
-        buyPotionBtn.addEventListener('click', () => {
-            if (coins >= 50) { coins -= 50; potions++; updateUI(); alertOrShow('Зелье куплено!'); }
-        });
-        buyAuto.addEventListener('click', () => {
-            if (coins >= 200) { coins -= 200; autoClick += 1; updateUI(); alertOrShow('Авто-клик +1/sec!'); }
-        });
-        buyEvo.addEventListener('click', () => {
-            if (coins >= 300 && !evolved) { coins -= 300; evolved = true; cat.style.filter = 'drop-shadow(0 0 20px #ffd700)'; updateUI(); alertOrShow('Эволюция! Котик сияет 🌟'); }
-        });
-
-        // Скрещивание
-        breedBtn.addEventListener('click', () => {
-            if (inventory.length >= 2 && potions >= 1) {
-                const idx1 = Math.floor(Math.random() * inventory.length);
-                const idx2 = (idx1 + 1 + Math.floor(Math.random() * (inventory.length - 1))) % inventory.length;
-                const parent1 = inventory[idx1];
-                const parent2 = inventory[idx2];
-                const newCat = generateCat(parent1, parent2);
-                inventory.push(newCat);
-                potions--;
-                updateUI();
-                alertOrShow(`Скрестил ${parent1.name} и ${parent2.name}! Получил ${newCat.name} ✨`);
-            }
-        });
-
-        function alertOrShow(msg) {
-            if (Telegram.WebApp) Telegram.WebApp.showAlert(msg); else alert(msg);
-        }
-
-        // Клик (без x2)
-        cat.addEventListener('click', () => {
-            clicks++;
-            updateUI();
-            checkLevel();
-            cat.style.transform = 'scale(1.2)';
-            setTimeout(() => { cat.style.transform = 'scale(1)'; }, 150);
-
-            if (clicks % 50 === 0) {
-                const newCat = generateCat();
-                inventory.push(newCat);
-                updateUI();
-                alertOrShow(`${newCat.name} упал в сумку! Редкость: ${newCat.rarity.toUpperCase()} 😻`);
-            }
-
-            if (clicks % 10 === 0 && clicks % 50 !== 0) {
-                alertOrShow(`Вау, ${clicks} кликов! 🐾`);
-            }
-        });
-
-        updateUI();
-    </script>
-</body>
-</html>
+                            <button class="sell-btn" onclick="
