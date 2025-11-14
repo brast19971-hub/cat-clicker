@@ -33,6 +33,8 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
             border-radius: 50%;
             animation: wiggle 2s ease-in-out infinite;
+            pointer-events: auto; /* Force для ТГ */
+            touch-action: manipulation; /* Для мобилы */
         }
         #cat:hover {
             transform: scale(1.1);
@@ -317,35 +319,21 @@
             document.body.style.background = Telegram.WebApp.themeParams.bg_color || '#667eea';
         }
 
-        // Расширенные данные: больше пород и имён
+        // Данные
         const catTypes = [
             { type: 'Пушистик', desc: 'Fluffy dream' },
             { type: 'Скоттиш', desc: 'Foldy cutie' },
             { type: 'Сфинкс', desc: 'Bald boss' },
             { type: 'Бенгальский', desc: 'Wild spark' },
             { type: 'Абиссинский', desc: 'Tickly tick' },
-            { type: 'Сиамский', desc: 'Chatty charm' },
-            { type: 'Персидский', desc: 'Fluffy royal' },
-            { type: 'Мейн Кун', desc: 'Gentle giant' },
-            { type: 'Рэгдолл', desc: 'Raggy doll' },
-            { type: 'Бирманский', desc: 'Sacred seal' },
-            { type: 'Ориентальный', desc: 'Slim sleek' },
-            { type: 'Американский Шортхэр', desc: 'Everyday hero' },
-            { type: 'Русская Голубая', desc: 'Blue velvet' },
-            { type: 'Бомбейский', desc: 'Panther mini' },
-            { type: 'Экзотик Шортхэр', desc: 'Persian shorty' },
-            { type: 'Британский Шортхэр', desc: 'Teddy bear' },
-            { type: 'Бирманский', desc: 'Mystic points' },
-            { type: 'Шотландский Фолд', desc: 'Folded ears' },
-            { type: 'Бирманский', desc: 'Sacred seal' },
-            { type: 'Турецкий Ван', desc: 'Swimming van' }
+            { type: 'Сиамский', desc: 'Chatty charm' }
         ];
         const rarities = [
             { name: 'common', multiplier: 1, color: '#ccc', basePrice: [5, 15] },
             { name: 'rare', multiplier: 1.2, color: '#00ff00', basePrice: [20, 40] },
             { name: 'epic', multiplier: 1.5, color: '#ffd700', basePrice: [50, 100] }
         ];
-        const names = ['Мурзик', 'Пушистик', 'Шрёдингер', 'Буся', 'Кекс', 'Звёздочка', 'Тиша', 'Няша', 'Фифи', 'Лапка', 'Готик', 'Шэдоу', 'Рейвен', 'Поззи', 'Вискерс', 'Павзилла', 'Муншайн', 'Эклипс', 'Фрост', 'Блэйз', 'Силвер', 'Вайлд', 'Свитч', 'Дрим', 'Ноктюрн', 'Албус', 'Фреки', 'Флора', 'Кобальт', 'Гермес', 'Джейден', 'Дэш', 'Корица', 'Джаффа', 'Рыцарь', 'Зигги', 'Гудини', 'Бентли', 'Желе', 'Дуст Банни', 'Фазз', 'Тоу Джэм', 'Макнаггет', 'Леттус', 'Пикл', 'Твид', 'Астериск', 'Амперсанд', 'Дот', 'Пудл', 'Стоун', 'Твинки', 'Сникер', 'Винди', 'Плам', 'Скатлбатт', 'Джигглипафф', 'Зузу', 'Мармит', 'Мейджор Том', 'Мертл', 'Ребел', 'Какао', 'Алекс', 'Бейли', 'Бисквит', 'Блоссом', 'Белла', 'Луна', 'Оливер', 'Лео', 'Сникерс', 'Маршмеллоу', 'Зефир', 'Калипсо', 'Чэрмен', 'Эбби', 'Артемида', 'Афина', 'Бен', 'Бастер', 'Харли', 'Генри', 'Хоббс', 'Джексон', 'Джерри', 'Муфаса', 'Маффет', 'Мuffin', 'Панда', 'Пич', 'Пип', 'Тинкер', 'Мидж', 'Пинат', 'Баттон', 'Бинз', 'Аттикус', 'Бриенна', 'Баттеркап', 'Серсея', 'Чешир Кэт', 'Дейнерыс', 'Дарси', 'Багера', 'Руфус', 'Каспиан'];
+        const names = ['Мурзик', 'Пушистик', 'Шрёдингер', 'Буся', 'Кекс', 'Звёздочка', 'Тиша', 'Няша', 'Фифи', 'Лапка', 'Готик', 'Шэдоу', 'Рейвен', 'Поззи', 'Вискерс', 'Павзилла', 'Муншайн', 'Эклипс', 'Фрост', 'Блэйз', 'Силвер', 'Вайлд', 'Свитч', 'Дрим', 'Ноктюрн'];
 
         // Загрузка
         let clicks = parseInt(localStorage.getItem('catClicks')) || 0;
@@ -446,4 +434,14 @@
                                 <div>${cat.name} (${cat.type})</div>
                                 <div class="rarity">${cat.rarity.toUpperCase()} — ${cat.price} монет</div>
                             </div>
-                            <button class="sell-btn" onclick="
+                            <button class="sell-btn" onclick="event.stopPropagation(); sellCat(${realIdx})">Продать</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Сохранение (с force для ТГ)
+            localStorage.setItem('catClicks', clicks.toString());
+            localStorage.setItem('catCoins', coins.toString());
+            localStorage.setItem('catPotions', potions.toString());
+            localStorage.set
