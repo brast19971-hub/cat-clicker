@@ -25,6 +25,12 @@
             margin-bottom: 20px;
             text-align: center;
         }
+        .version {
+            font-size: 0.8em;
+            color: #ffd700;
+            font-style: italic;
+            margin-top: -10px;
+        }
         #cat {
             width: 200px;
             height: 200px;
@@ -33,8 +39,9 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
             border-radius: 50%;
             animation: wiggle 2s ease-in-out infinite;
-            pointer-events: auto; /* Force для ТГ */
-            touch-action: manipulation; /* Для мобилы */
+            pointer-events: auto;
+            touch-action: manipulation;
+            position: relative;
         }
         #cat:hover {
             transform: scale(1.1);
@@ -46,6 +53,24 @@
         @keyframes wiggle {
             0%, 100% { transform: rotate(-2deg); }
             50% { transform: rotate(2deg); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes sparkle {
+            0% { opacity: 1; transform: scale(0) rotate(0deg); }
+            100% { opacity: 0; transform: scale(1) rotate(180deg); }
+        }
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 0.5s ease-out forwards;
         }
         #stats {
             text-align: center;
@@ -277,7 +302,7 @@
     </style>
 </head>
 <body>
-    <h1>Кликай по котику! 🐱</h1>
+    <h1>Кликай по котику! 🐱 <span class="version">v2.0</span></h1>
     <img id="cat" src="https://cataas.com/cat?says=Hi" alt="Котик">
     <div id="stats">
         <div id="level">Уровень: 1</div>
@@ -367,6 +392,10 @@
         let currentModalIndex = -1;
         let filteredInventory = [...inventory];
 
+        // Звук мяуканья
+        const meowSound = new Audio('https://freesound.org/data/previews/269/269021_5121236-lq.mp3'); // Орущий кот, короткий
+        meowSound.volume = 0.5;
+
         // Уровни
         function checkLevel() {
             const newLevel = Math.floor(clicks / 500) + 1;
@@ -405,7 +434,17 @@
             return `https://cataas.com/cat?${hash}`;
         }
 
-        // Обновление UI (фикс для ТГ: force render)
+        // Анимация particles
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            cat.parentNode.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 500);
+        }
+
+        // Обновление UI
         function updateUI() {
             counter.textContent = `Кликов: ${clicks}`;
             coinsEl.textContent = `Кото-монеты: ${coins}`;
@@ -440,8 +479,148 @@
                 }).join('');
             }
 
-            // Сохранение (с force для ТГ)
             localStorage.setItem('catClicks', clicks.toString());
             localStorage.setItem('catCoins', coins.toString());
             localStorage.setItem('catPotions', potions.toString());
-            localStorage.set
+            localStorage.setItem('catLevel', level.toString());
+            localStorage.setItem('autoClick', autoClick.toString());
+            localStorage.setItem('evolved', evolved.toString());
+            localStorage.setItem('catInventory', JSON.stringify(inventory));
+
+            const currentCat = generateCat();
+            cat.src = getCatImage(currentCat);
+            cat.alt = currentCat.name;
+
+            if (Telegram.WebApp) Telegram.WebApp.expand();
+        }
+
+        function filterBag() {
+            setTimeout(updateUI, 100);
+        }
+
+        // Генерация котика
+        function generateCat(parent1 = null, parent2 = null) {
+            let type, rarity, price;
+            if (parent1 && parent2) {
+                type = Math.random() > 0.5 ? parent1.type : parent2.type;
+                const rareChance = (parent1.rarity === 'rare' || parent2.rarity === 'rare') ? 0.4 : 0.05;
+                rarity = Math.random() < rareChance ? (Math.random() < 0.2 ? 'epic' : 'rare') : 'common';
+                const r = rarities.find(rr => rr.name === rarity);
+                price = Math.floor(((parent1.price + parent2.price) / 2) * r.multiplier + Math.random() * 10);
+            } else {
+                const baseIdx = Math.floor(Math.random() * catTypes.length);
+                type = catTypes[baseIdx].type;
+                const rand = Math.random();
+                rarity = rand < 0.05 ? 'epic' : (rand < 0.3 ? 'rare' : 'common');
+                const r = rarities.find(rr => rr.name === rarity);
+                const minP = r.basePrice[0];
+                const maxP = r.basePrice[1];
+                price = Math.floor(Math.random() * (maxP - minP + 1) + minP) * r.multiplier;
+            }
+            const name = names[Math.floor(Math.random() * names.length)];
+            return { name, type, rarity, price };
+        }
+
+        // Модал
+        window.openModal = function(index) {
+            currentModalIndex = index;
+            const cat = inventory[index];
+            modalCatImg.src = getCatImage(cat);
+            modalCatImg.alt = cat.name;
+            modalName.textContent = `${cat.name} (${cat.type})`;
+            modalAttrs.innerHTML = `
+                <li>Тип: ${cat.type}</li>
+                <li>Редкость: ${cat.rarity.toUpperCase()}</li>
+            `;
+            modalPrice.textContent = `Цена: ${cat.price} монет`;
+            shareModal.onclick = () => {
+                if (Telegram.WebApp) Telegram.WebApp.shareUrl(Telegram.WebApp.initDataUnsafe.start_app_url, `${cat.name} — мой редкий котик! ${cat.rarity.toUpperCase()}`);
+            };
+            sellFromModal.onclick = () => sellCat(index);
+            modal.style.display = 'block';
+        };
+
+        closeModal.onclick = () => { modal.style.display = 'none'; };
+        window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+        // Продать
+        window.sellCat = function(index) {
+            const cat = inventory.splice(index, 1)[0];
+            coins += cat.price;
+            setTimeout(updateUI, 100);
+            if (modal.style.display === 'block') modal.style.display = 'none';
+            alertOrShow(`Продал ${cat.name} за ${cat.price} монет! 💰`);
+        };
+
+        // Магазин
+        buyPotionBtn.addEventListener('click', () => {
+            if (coins >= 50) { coins -= 50; potions++; setTimeout(updateUI, 100); alertOrShow('Зелье куплено!'); }
+        });
+        buyAuto.addEventListener('click', () => {
+            if (coins >= 200) { coins -= 200; autoClick += 1; setTimeout(updateUI, 100); alertOrShow('Авто-клик +1/sec!'); }
+        });
+        buyEvo.addEventListener('click', () => {
+            if (coins >= 300 && !evolved) { coins -= 300; evolved = true; cat.style.filter = 'drop-shadow(0 0 20px #ffd700)'; setTimeout(updateUI, 100); alertOrShow('Эволюция! Котик сияет 🌟'); }
+        });
+
+        // Скрещивание
+        breedBtn.addEventListener('click', () => {
+            if (inventory.length >= 2 && potions >= 1) {
+                const idx1 = Math.floor(Math.random() * inventory.length);
+                const idx2 = (idx1 + 1 + Math.floor(Math.random() * (inventory.length - 1))) % inventory.length;
+                const parent1 = inventory[idx1];
+                const parent2 = inventory[idx2];
+                const newCat = generateCat(parent1, parent2);
+                inventory.push(newCat);
+                potions--;
+                setTimeout(updateUI, 100);
+                alertOrShow(`Скрестил ${parent1.name} и ${parent2.name}! Получил ${newCat.name} ✨`);
+            }
+        });
+
+        function alertOrShow(msg) {
+            if (Telegram.WebApp) {
+                Telegram.WebApp.showAlert(msg);
+            } else {
+                alert(msg);
+            }
+        }
+
+        // Клик (усиленный фикс для ТГ)
+        function handleClick(e) {
+            e.preventDefault(); // Block default для ТГ
+            console.log('Click triggered!'); // Debug
+            clicks++;
+            cat.style.animation = 'shake 0.3s ease-in-out'; // Shake анимация
+            // Particles
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => createSparkle(Math.random() * 200, Math.random() * 200), i * 50);
+            }
+            // Звук
+            meowSound.play().catch(() => {}); // Ignore autoplay block
+            setTimeout(() => { 
+                cat.style.animation = 'wiggle 2s ease-in-out infinite';
+                if (clicks % 50 === 0) {
+                    const newCat = generateCat();
+                    inventory.push(newCat);
+                    alertOrShow(`${newCat.name} упал в сумку! Редкость: ${newCat.rarity.toUpperCase()} 😻`);
+                }
+                setTimeout(updateUI, 50);
+                checkLevel();
+            }, 300);
+
+            if (clicks % 10 === 0 && clicks % 50 !== 0) {
+                alertOrShow(`Вау, ${clicks} кликов! 🐾`);
+            }
+        }
+
+        cat.addEventListener('click', handleClick);
+        cat.addEventListener('pointerdown', handleClick);
+        cat.addEventListener('touchstart', handleClick, { passive: false });
+
+        // Инициализация
+        setTimeout(updateUI, 100);
+        searchInput.addEventListener('input', filterBag);
+    </script>
+</body>
+</html>
