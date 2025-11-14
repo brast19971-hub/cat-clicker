@@ -13,10 +13,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            overflow-y: auto;
         }
         h1 {
             font-size: 2em;
@@ -35,58 +36,289 @@
         #cat:active {
             transform: scale(0.95);
         }
-        #counter {
+        #stats {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #counter, #coins, #potions {
             font-size: 1.5em;
+            margin: 10px 0;
+        }
+        #buy-potion {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px;
+        }
+        #buy-potion:hover {
+            background: #45a049;
+        }
+        #buy-potion:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #breed-btn {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px;
+        }
+        #breed-btn:hover:not(:disabled) {
+            background: #7b1fa2;
+        }
+        #breed-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #bag {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 300px;
             margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #bag h3 {
+            margin-top: 0;
+        }
+        .cat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .cat-svg {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+        .sell-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .sell-btn:hover {
+            background: #ff5252;
+        }
+        .empty-bag {
+            font-style: italic;
+            color: #ccc;
         }
     </style>
 </head>
 <body>
     <h1>Кликай по котику! 🐱</h1>
     <svg id="cat" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- Простой SVG-котик -->
-        <circle cx="50" cy="50" r="30" fill="#ffdbac" stroke="#333" stroke-width="2"/> <!-- Голова -->
-        <circle cx="35" cy="45" r="3" fill="black"/> <!-- Глаз 1 -->
-        <circle cx="65" cy="45" r="3" fill="black"/> <!-- Глаз 2 -->
-        <circle cx="50" cy="55" r="4" fill="pink"/> <!-- Нос -->
-        <path d="M45 60 Q50 65 55 60" stroke="black" stroke-width="2" fill="none"/> <!-- Рот -->
-        <!-- Ушки -->
-        <path d="M30 30 L25 20 L35 25 Z" fill="#ffdbac" stroke="#333" stroke-width="2"/>
-        <path d="M70 30 L75 20 L65 25 Z" fill="#ffdbac" stroke="#333" stroke-width="2"/>
-        <!-- Хвостик -->
-        <path d="M80 70 Q90 80 85 90" stroke="#ffdbac" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Базовый котик, обновляется динамически -->
     </svg>
-    <div id="counter">Кликов: 0</div>
+    <div id="stats">
+        <div id="counter">Кликов: 0</div>
+        <div id="coins">Кото-монеты: 0</div>
+        <div id="potions">Зелья: 0</div>
+        <button id="buy-potion">Купить зелье (50 монет) 🧪</button>
+        <br>
+        <button id="breed-btn" disabled>Скрещивать котиков! ✨</button>
+    </div>
+    <div id="bag">
+        <h3>Твоя сумка 👜</h3>
+        <div id="bag-content">Сумка пуста, кликай дальше!</div>
+    </div>
 
     <script>
         // Инициализация Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
             Telegram.WebApp.ready();
-            Telegram.WebApp.expand(); // Расширяем на весь экран
+            Telegram.WebApp.expand();
             document.body.style.background = Telegram.WebApp.themeParams.bg_color || '#667eea';
         }
 
-        let clicks = 0;
+        // Данные для котиков: типы, цвета, узоры
+        const catBases = [
+            { type: 'Пушистик', baseColor: '#ffdbac' },
+            { type: 'Скоттиш', baseColor: '#e0c3fc' },
+            { type: 'Сфинкс', baseColor: '#f4a460' },
+            { type: 'Бенгальский', baseColor: '#d2691e' }
+        ];
+        const patterns = [
+            { name: 'solid', desc: 'Гладкий' },
+            { name: 'striped', desc: 'Полосатый', path: 'M0 0 L10 10 M10 0 L0 10' }, // Простые полоски
+            { name: 'spotted', desc: 'Пятнистый', circles: true },
+            { name: 'tabby', desc: 'Мраморный', swirls: true }
+        ];
+        const names = ['Мурзик', 'Пушистик', 'Шрёдингер', 'Буся', 'Кекс', 'Звёздочка', 'Тиша', 'Няша', 'Фифи', 'Лапка'];
+
+        // Загрузка из localStorage
+        let clicks = parseInt(localStorage.getItem('catClicks')) || 0;
+        let coins = parseInt(localStorage.getItem('catCoins')) || 0;
+        let potions = parseInt(localStorage.getItem('catPotions')) || 0;
+        let inventory = JSON.parse(localStorage.getItem('catInventory')) || [];
+
         const cat = document.getElementById('cat');
         const counter = document.getElementById('counter');
+        const coinsEl = document.getElementById('coins');
+        const potionsEl = document.getElementById('potions');
+        const bagContent = document.getElementById('bag-content');
+        const buyPotionBtn = document.getElementById('buy-potion');
+        const breedBtn = document.getElementById('breed-btn');
 
+        // Генерация SVG для котика
+        function generateCatSVG(catData) {
+            const base = catBases.find(b => b.type === catData.type);
+            const pat = patterns.find(p => p.name === catData.pattern);
+            let svg = `<defs>
+                <pattern id="tex${Math.random()}" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <rect width="10" height="10" fill="${base.baseColor}"/>
+                    ${pat.name === 'striped' ? `<path d="${pat.path}" stroke="#333" stroke-width="1" opacity="0.5"/>` : ''}
+                    ${pat.name === 'spotted' ? `<circle cx="2" cy="2" r="1" fill="#333" opacity="0.5"/><circle cx="8" cy="8" r="1.5" fill="#333" opacity="0.5"/>` : ''}
+                    ${pat.name === 'tabby' ? `<circle cx="5" cy="5" r="3" fill="none" stroke="#333" stroke-width="0.5" opacity="0.3"/>` : ''}
+                </pattern>
+            </defs>
+            <circle cx="50" cy="50" r="30" fill="url(#tex${Math.random()})" stroke="#333" stroke-width="2"/>
+            <circle cx="35" cy="45" r="3" fill="black"/>
+            <circle cx="65" cy="45" r="3" fill="black"/>
+            <circle cx="50" cy="55" r="4" fill="pink"/>
+            <path d="M45 60 Q50 65 55 60" stroke="black" stroke-width="2" fill="none"/>
+            <path d="M30 30 L25 20 L35 25 Z" fill="${base.baseColor}" stroke="#333" stroke-width="2"/>
+            <path d="M70 30 L75 20 L65 25 Z" fill="${base.baseColor}" stroke="#333" stroke-width="2"/>
+            <path d="M80 70 Q90 80 85 90" stroke="${base.baseColor}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+            return svg;
+        }
+
+        // Обновление UI
+        function updateUI() {
+            counter.textContent = `Кликов: ${clicks}`;
+            coinsEl.textContent = `Кото-монеты: ${coins}`;
+            potionsEl.textContent = `Зелья: ${potions}`;
+            buyPotionBtn.disabled = coins < 50;
+            breedBtn.disabled = inventory.length < 2 || potions < 1;
+
+            if (inventory.length === 0) {
+                bagContent.innerHTML = '<div class="empty-bag">Сумка пуста, кликай дальше!</div>';
+            } else {
+                bagContent.innerHTML = inventory.map((cat, index) => `
+                    <div class="cat-item">
+                        <svg class="cat-svg" viewBox="0 0 100 100">${generateCatSVG(cat)}</svg>
+                        <span>${cat.name} (${cat.type}, ${patterns.find(p => p.name === cat.pattern).desc}) — ${cat.price} монет</span>
+                        <button class="sell-btn" onclick="sellCat(${index})">Продать</button>
+                    </div>
+                `).join('');
+            }
+            // Сохранение
+            localStorage.setItem('catClicks', clicks);
+            localStorage.setItem('catCoins', coins);
+            localStorage.setItem('catPotions', potions);
+            localStorage.setItem('catInventory', JSON.stringify(inventory));
+
+            // Обновляем текущего котика (первый из типов, или рандом)
+            const currentCat = { type: catBases[Math.floor(Math.random() * catBases.length)].type, pattern: patterns[Math.floor(Math.random() * patterns.length)].name };
+            cat.innerHTML = generateCatSVG(currentCat);
+        }
+
+        // Генерация рандомного котика
+        function generateCat(parent1 = null, parent2 = null) {
+            let type, pattern, price;
+            if (parent1 && parent2) {
+                // Скрещивание: микс
+                type = Math.random() > 0.5 ? parent1.type : parent2.type;
+                pattern = Math.random() > 0.5 ? parent1.pattern : parent2.pattern;
+                price = Math.floor((parent1.price + parent2.price) / 2 + Math.random() * 20 - 10); // Среднее ±10
+            } else {
+                // Обычный дроп
+                const base = catBases[Math.floor(Math.random() * catBases.length)];
+                type = base.type;
+                pattern = patterns[Math.floor(Math.random() * patterns.length)].name;
+                const basePrice = Math.random() * 40 + 10;
+                price = Math.floor(basePrice);
+            }
+            const name = names[Math.floor(Math.random() * names.length)];
+            return { name, type, pattern, price: Math.max(5, price) };
+        }
+
+        // Продать котика
+        window.sellCat = function(index) {
+            const cat = inventory.splice(index, 1)[0];
+            coins += cat.price;
+            updateUI();
+            alertOrShow(`Продал ${cat.name} за ${cat.price} монет! 💰`);
+        };
+
+        // Купить зелье
+        buyPotionBtn.addEventListener('click', () => {
+            if (coins >= 50) {
+                coins -= 50;
+                potions++;
+                updateUI();
+                alertOrShow('Зелье куплено! Теперь скрещивай 😈');
+            }
+        });
+
+        // Скрещивание
+        breedBtn.addEventListener('click', () => {
+            if (inventory.length >= 2 && potions >= 1) {
+                const idx1 = Math.floor(Math.random() * inventory.length);
+                const idx2 = (idx1 + 1 + Math.floor(Math.random() * (inventory.length - 1))) % inventory.length;
+                const parent1 = inventory[idx1];
+                const parent2 = inventory[idx2];
+                const newCat = generateCat(parent1, parent2);
+                inventory.push(newCat);
+                potions--;
+                // Удаляем родителей? Нет, только генерим нового, как в ферме
+                updateUI();
+                alertOrShow(`Скрестил ${parent1.name} и ${parent2.name}! Получил ${newCat.name} (${newCat.type}, ${patterns.find(p => p.name === newCat.pattern).desc}) за ${newCat.price} монет ✨`);
+            }
+        });
+
+        function alertOrShow(msg) {
+            if (Telegram.WebApp) {
+                Telegram.WebApp.showAlert(msg);
+            } else {
+                alert(msg);
+            }
+        }
+
+        // Клик по котику
         cat.addEventListener('click', () => {
             clicks++;
-            counter.textContent = `Кликов: ${clicks}`;
-            // Анимация: котик "прыгает"
+            updateUI();
+
+            // Анимация
             cat.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 cat.style.transform = 'scale(1)';
             }, 150);
-            
-            // Если много кликов, можно добавить конфетти или звук, но пока просто
-            if (clicks % 10 === 0) {
-                alert(`Вау, ${clicks} кликов! Котик счастлив 😻`); // Или используй Telegram.showAlert
-                if (Telegram.WebApp) {
-                    Telegram.WebApp.showAlert(`Котик в шоке от ${clicks} кликов!`);
-                }
+
+            // Каждые 50 кликов — новый котик!
+            if (clicks % 50 === 0) {
+                const newCat = generateCat();
+                inventory.push(newCat);
+                updateUI();
+                alertOrShow(`${newCat.name} (${newCat.type}, ${patterns.find(p => p.name === newCat.pattern).desc}) упал в сумку! Цена: ${newCat.price} монет 😻`);
+            }
+
+            // Бонус алерт каждые 10
+            if (clicks % 10 === 0 && clicks % 50 !== 0) {
+                alertOrShow(`Вау, ${clicks} кликов! Котик в восторге 🐾`);
             }
         });
+
+        // Инициализация
+        updateUI();
     </script>
 </body>
 </html>
