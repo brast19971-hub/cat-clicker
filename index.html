@@ -1,34 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PoopMuncher Fluffball</title>
+    <title>PoopMuncher Tarkov Edition 🖤</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- TG WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="cat-canvas" width="300" height="300"></canvas>
-        <div id="stats">
-            <p>Level: <span id="level">1</span></p>
-            <p>XP: <span id="xp">0</span>/100</p>
-            <p>Health: <span id="health">100</span></p>
-            <p>Fatness: <span id="fatness">Skinny</span></p>
-        </div>
-        <button id="eat-btn">Nom Poop! 🍫 (jk)</button>
-        <div id="gear">
-            <h3>Gear:</h3>
-            <select id="gear-select">
-                <option>None</option>
-                <option>Poop Crown (+10 XP)</option>
-                <option>Turbo Digest (x2 Eat Speed)</option>
-            </select>
-            <button id="equip-btn">Equip</button>
-        </div>
-        <button id="pvp-btn">Fight AI!</button>
-        <div id="battle-log"></div>
+    <div id="ui-tabs">
+        <button id="tab-stats">Stats</button>
+        <button id="tab-stash">Stash</button>
+        <button id="tab-equip">Equip</button>
+        <button id="tab-raid">Raid</button>
     </div>
+    <canvas id="game-canvas" width="600" height="600"></canvas>
+    <div id="stats-panel">
+        <p>Level: <span id="level">1</span> | XP: <span id="xp">0</span>/100 | HP: <span id="hp">100</span> | Fat: <span id="fat">Skinny</span></p>
+        <p>ATK: <span id="atk">10</span> | DEF: <span id="def">0</span></p>
+    </div>
+    <div id="stash-panel" style="display:none;">
+        <h3>Stash (Лут из рейдов)</h3>
+        <div id="stash-list"></div>
+    </div>
+    <div id="equip-panel" style="display:none;">
+        <h3>Equip (Берёшь в рейд)</h3>
+        <div id="equip-slots">
+            <div>Hat: <span id="equipped-hat">None</span> <button id="unequip-hat">Unequip</button></div>
+            <div>Chest: <span id="equipped-chest">None</span> <button id="unequip-chest">Unequip</button></div>
+        </div>
+        <button id="enter-raid">Enter Raid! ⚔️</button>
+    </div>
+    <div id="battle-log"></div>
     <script src="script.js"></script>
 </body>
 </html>
