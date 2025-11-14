@@ -1,0 +1,37 @@
+body {
+    background: #111; /* Goth vibe */
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+#game-container {
+    max-width: 300px;
+    margin: auto;
+}
+
+#cat-canvas {
+    border: 2px solid #ff69b4; /* Pink accent for cute-alt */
+    background: #222;
+}
+
+button {
+    background: #ff69b4;
+    border: none;
+    color: #111;
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #fff;
+    color: #ff69b4;
+}
+
+#stats, #gear {
+    margin: 20px 0;
+}
